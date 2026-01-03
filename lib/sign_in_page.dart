@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/widgets/social_login_button.dart';
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({super.key, required this.onSignIn});
+import 'models/user_model.dart';
 
-  final Function(User user) onSignIn;
+class SignInPage extends StatelessWidget {
+  const SignInPage({super.key, required this.onSignIn, required this.authBase});
+
+  final Function(UserModel user) onSignIn;
+  final AuthBase authBase;
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +38,14 @@ class SignInPage extends StatelessWidget {
 
   void _misafirGirisiYap() async {
     try {
-      final userCredential = await FirebaseAuth.instance.signInAnonymously();
-      print("Signed in with temporary account ${userCredential.user?.uid}");
-      onSignIn(userCredential.user!);
+      //final userCredential = await FirebaseAuth.instance.signInAnonymously();
+      //debugPrint("Signed in with temporary account ${userCredential.user?.uid}");
+      onSignIn(await authBase.signInAnonymously());
     } on FirebaseAuthException catch (e) {
       if (e.code == "operation-not-allowed") {
-        print("Anonymous auth hasn't been enabled for this project.");
+        debugPrint("Anonymous auth hasn't been enabled for this project.");
       } else {
-        print("Unknown error: ${e.message}");
+        debugPrint("Unknown error: ${e.message}");
       }
     }
   }

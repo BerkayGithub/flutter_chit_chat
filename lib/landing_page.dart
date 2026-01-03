@@ -1,18 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/models/user_model.dart';
+import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/sign_in_page.dart';
 
 import 'home_page.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+  const LandingPage({super.key, required this.authBase});
+  final AuthBase authBase;
 
   @override
   State<LandingPage> createState() => _LandingPageState();
 }
 
 class _LandingPageState extends State<LandingPage> {
-  User? _firebaseUser;
+  UserModel? _userModel;
 
   @override
   void initState() {
@@ -21,26 +23,28 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _checkUser() async{
-    _firebaseUser = FirebaseAuth.instance.currentUser;
+    _userModel = await widget.authBase.currentUser();
   }
 
-  void updateUser(User? firebaseUser){
+  void updateUser(UserModel? user){
     setState(() {
-      _firebaseUser = firebaseUser;
+      _userModel = user;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if(_firebaseUser != null){
+    if(_userModel != null){
       return HomePage(
-        firebaseUser: _firebaseUser!,
+        authBase: widget.authBase,
+        userModel: _userModel!,
         onSignOut: (){
           updateUser(null);
         }
       );
     }else{
       return SignInPage(
+        authBase: widget.authBase,
         onSignIn: (user){
           updateUser(user);
         }

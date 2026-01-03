@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 
 import 'landing_page.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      home: LandingPage(authBase: FirebaseAuthService()),
     );
   }
 }
