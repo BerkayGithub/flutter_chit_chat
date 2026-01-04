@@ -69,4 +69,12 @@ class UserViewModel with ChangeNotifier{
     }
   }
 
+  Future<UserModel?> signInWithGoogle() async{
+    viewState = ViewState.busy;
+    final sonuc = await _userRepository.signInWithGoogle();
+    userModel = sonuc;
+    viewState = ViewState.idle;
+    return sonuc;
+}
+
 }

@@ -15,8 +15,13 @@ class FakeAuthService implements AuthBase{
   }
 
   @override
-  Future<bool> signOut() {
+  Future<bool> signOut() async{
     return Future.value(true);
+  }
+
+  @override
+  Future<UserModel?> signInWithGoogle() async{
+    return await Future.delayed(Duration(seconds: 2), () => UserModel(userID: userID));
   }
 
 }

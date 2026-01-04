@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService implements AuthBase{
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -41,11 +42,39 @@ class FirebaseAuthService implements AuthBase{
   @override
   Future<bool> signOut() async{
     try {
+      var googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
       await _firebaseAuth.signOut();
       return true;
     } on Exception catch (e) {
       debugPrint("HATA SIGN OUT ${e.toString()}");
       return false;
+    }
+  }
+
+  @override
+  Future<UserModel?> signInWithGoogle() async{
+    try{
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if(googleUser == null){
+        return null;
+      }
+      final GoogleSignInAuthentication googleSignInAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuth.idToken,
+        accessToken: googleSignInAuth.accessToken
+      );
+      await _firebaseAuth.signInWithCredential(credential);
+      User? firebaseUser = _firebaseAuth.currentUser;
+      return userFormFirebaseUser(firebaseUser);
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Firebase Auth Error: ${e.message}');
+      // Handle Firebase specific errors (e.g., account-exists-with-different-credential)
+      return null;
+    } catch(e){
+      debugPrint("HATA SIGN IN WITH GOOGLE ${e.toString()}");
+      return null;
     }
   }
 }
