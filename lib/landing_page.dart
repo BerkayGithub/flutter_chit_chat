@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/locator.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
+import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/sign_in_page.dart';
 
 import 'home_page.dart';
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({super.key, required this.authBase});
-  final AuthBase authBase;
+  const LandingPage({super.key});
 
   @override
   State<LandingPage> createState() => _LandingPageState();
@@ -15,6 +16,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   UserModel? _userModel;
+  final AuthBase authBase = locator<FirebaseAuthService>();
 
   @override
   void initState() {
@@ -23,7 +25,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   Future<void> _checkUser() async{
-    _userModel = await widget.authBase.currentUser();
+    _userModel = await authBase.currentUser();
   }
 
   void updateUser(UserModel? user){
@@ -36,7 +38,6 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
     if(_userModel != null){
       return HomePage(
-        authBase: widget.authBase,
         userModel: _userModel!,
         onSignOut: (){
           updateUser(null);
@@ -44,7 +45,6 @@ class _LandingPageState extends State<LandingPage> {
       );
     }else{
       return SignInPage(
-        authBase: widget.authBase,
         onSignIn: (user){
           updateUser(user);
         }

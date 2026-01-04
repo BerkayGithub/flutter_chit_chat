@@ -1,15 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/locator.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
+import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/widgets/social_login_button.dart';
 
 import 'models/user_model.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({super.key, required this.onSignIn, required this.authBase});
+  SignInPage({super.key, required this.onSignIn});
 
   final Function(UserModel user) onSignIn;
-  final AuthBase authBase;
+  final AuthBase authBase = locator<FirebaseAuthService>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +40,6 @@ class SignInPage extends StatelessWidget {
 
   void _misafirGirisiYap() async {
     try {
-      //final userCredential = await FirebaseAuth.instance.signInAnonymously();
-      //debugPrint("Signed in with temporary account ${userCredential.user?.uid}");
       onSignIn(await authBase.signInAnonymously());
     } on FirebaseAuthException catch (e) {
       if (e.code == "operation-not-allowed") {

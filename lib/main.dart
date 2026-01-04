@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
+import 'package:flutter_chit_chat/locator.dart';
 
 import 'landing_page.dart';
 
@@ -9,6 +9,7 @@ import 'firebase_options.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await setupFirebase();
+  setupLocator();
   runApp(const MyApp());
 }
 
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home: LandingPage(authBase: FirebaseAuthService()),
+      home: LandingPage(),
     );
   }
 }
