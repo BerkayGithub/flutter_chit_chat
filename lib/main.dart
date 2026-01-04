@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/locator.dart';
+import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import 'landing_page.dart';
 
@@ -28,7 +30,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      home: ChangeNotifierProvider<UserViewModel>(
+          create: (_) => UserViewModel(),
+          builder: (context, child) {
+            return LandingPage();
+          },
+      )
     );
   }
 }
