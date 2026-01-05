@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flutter ChitChat</string>
+    <string name="facebook_app_id">1367584431112051</string>
+    <string name="fb_login_protocol_scheme">fb1367584431112051</string>
+    <string name="facebook_client_token">b75d3f7ea6ec8a9dd5eb121f11043fd8</string>
+</resources>

@@ -5,26 +5,25 @@ import 'package:flutter_chit_chat/repository/user_repository.dart';
 
 enum ViewState { idle, busy }
 
-class UserViewModel with ChangeNotifier{
-
+class UserViewModel with ChangeNotifier {
   ViewState _viewState = ViewState.idle;
   final UserRepository _userRepository = locator<UserRepository>();
   UserModel? _userModel;
 
-  UserViewModel(){
+  UserViewModel() {
     currentUser();
   }
 
   ViewState get viewState => _viewState;
 
-  set viewState(ViewState state){
+  set viewState(ViewState state) {
     _viewState = state;
     notifyListeners();
   }
 
   UserModel? get userModel => _userModel;
 
-  set userModel(UserModel? newUserModel){
+  set userModel(UserModel? newUserModel) {
     _userModel = newUserModel;
     notifyListeners();
   }
@@ -37,44 +36,51 @@ class UserViewModel with ChangeNotifier{
     } on Exception catch (e) {
       debugPrint("HATA CURRENT USER ${e.toString()}");
       rethrow;
-    }finally{
+    } finally {
       viewState = ViewState.idle;
     }
   }
 
-  Future<UserModel?> signInAnonymously() async{
-    try{
+  Future<UserModel?> signInAnonymously() async {
+    try {
       viewState = ViewState.busy;
       _userModel = await _userRepository.signInAnonymously();
       return _userModel;
-    }catch(e){
+    } catch (e) {
       debugPrint("HATA SIGN IN ${e.toString()}");
       return null;
-    }finally {
+    } finally {
       viewState = ViewState.idle;
     }
   }
 
-  Future<bool?> signOut() async{
-    try{
+  Future<bool?> signOut() async {
+    try {
       viewState = ViewState.busy;
       bool sonuc = await _userRepository.signOut();
       userModel = null;
       return sonuc;
-    }catch(e){
+    } catch (e) {
       debugPrint("HATA SIGN OUT ${e.toString()}");
       return null;
-    }finally{
+    } finally {
       viewState = ViewState.idle;
     }
   }
 
-  Future<UserModel?> signInWithGoogle() async{
+  Future<UserModel?> signInWithGoogle() async {
     viewState = ViewState.busy;
     final sonuc = await _userRepository.signInWithGoogle();
     userModel = sonuc;
     viewState = ViewState.idle;
     return sonuc;
-}
+  }
 
+  Future<UserModel?> signInWithFacebook() async {
+    viewState = ViewState.busy;
+    final result = await _userRepository.signInWithFacebook();
+    userModel = result;
+    viewState = ViewState.idle;
+    return result;
+  }
 }
