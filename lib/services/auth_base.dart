@@ -6,4 +6,6 @@ abstract class AuthBase{
   Future<UserModel> currentUser();
   Future<UserModel?> signInWithGoogle();
   Future<UserModel?> signInWithFacebook();
+  Future<UserModel?> signInWithEmail(email, password);
+  Future<UserModel?> signUpWithEmail(email, password);
 }

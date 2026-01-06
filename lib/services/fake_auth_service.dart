@@ -21,12 +21,26 @@ class FakeAuthService implements AuthBase{
 
   @override
   Future<UserModel?> signInWithGoogle() async{
-    return await Future.delayed(Duration(seconds: 2), () => UserModel(userID: userID));
+    return await Future.delayed(
+        Duration(seconds: 2), () => UserModel(userID: "google_user_id_123456"));
   }
 
   @override
   Future<UserModel?> signInWithFacebook() async {
-    return null;
+    return await Future.delayed(
+        Duration(seconds: 2), () => UserModel(userID: "facebook_user_id_123456"));
+  }
+
+  @override
+  Future<UserModel?> signInWithEmail(email, password) async {
+    return await Future.delayed(
+        Duration(seconds: 2), () => UserModel(userID: "signed_in_user_id_123456"));
+  }
+
+  @override
+  Future<UserModel?> signUpWithEmail(email, password) async {
+    return await Future.delayed(
+        Duration(seconds: 2), () => UserModel(userID: "signed_up_user_id_123456"));
   }
 
 }

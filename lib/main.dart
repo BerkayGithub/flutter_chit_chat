@@ -24,18 +24,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter ChitChat',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      debugShowCheckedModeBanner: false,
-      home: ChangeNotifierProvider<UserViewModel>(
-          create: (_) => UserViewModel(),
-          builder: (context, child) {
-            return LandingPage();
-          },
-      )
+    return ChangeNotifierProvider<UserViewModel>(
+      create: (_) => UserViewModel(),
+      builder: (context, child){
+        return MaterialApp(
+            title: 'Flutter ChitChat',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            ),
+            debugShowCheckedModeBanner: false,
+            home: LandingPage()
+        );
+      },
     );
   }
 }

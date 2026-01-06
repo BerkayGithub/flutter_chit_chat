@@ -11,7 +11,7 @@ class UserRepository implements AuthBase{
   final FirebaseAuthService _firebaseAuthService = locator<FirebaseAuthService>();
   final FakeAuthService _fakeAuthService = locator<FakeAuthService>();
 
-  AppMode appMode = AppMode.RELEASE;
+  AppMode appMode = AppMode.DEBUG;
 
   @override
   Future<UserModel> currentUser() async{
@@ -55,6 +55,24 @@ class UserRepository implements AuthBase{
       return await _fakeAuthService.signInWithFacebook();
     }else {
       return await _firebaseAuthService.signInWithFacebook();
+    }
+  }
+
+  @override
+  Future<UserModel?> signInWithEmail(email, password) async{
+    if(appMode == AppMode.DEBUG){
+      return await _fakeAuthService.signInWithEmail(email, password);
+    }else {
+      return await _firebaseAuthService.signInWithEmail(email, password);
+    }
+  }
+
+  @override
+  Future<UserModel?> signUpWithEmail(email, password) async{
+    if(appMode == AppMode.DEBUG){
+      return await _fakeAuthService.signUpWithEmail(email, password);
+    }else {
+      return await _firebaseAuthService.signUpWithEmail(email, password);
     }
   }
 

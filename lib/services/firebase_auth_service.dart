@@ -105,4 +105,42 @@ class FirebaseAuthService implements AuthBase {
       return null;
     }
   }
+
+  @override
+  Future<UserModel?> signInWithEmail(email, password) async{
+    try {
+      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      User? firebaseUser = userCredential.user;
+      if(firebaseUser == null) {
+        return null;
+      } else {
+        return userFormFirebaseUser(firebaseUser);
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Firebase Auth Error: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint("HATA SIGN IN WITH EMAIL ${e.toString()}");
+      return null;
+    }
+  }
+
+  @override
+  Future<UserModel?> signUpWithEmail(email, password) async{
+    try {
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      User? firebaseUser = userCredential.user;
+      if(firebaseUser == null) {
+        return null;
+      } else {
+        return userFormFirebaseUser(firebaseUser);
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Firebase Auth Error: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint("HATA SIGN IN WITH EMAIL ${e.toString()}");
+      return null;
+    }
+  }
 }
