@@ -2,6 +2,7 @@ import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/services/fake_auth_service.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
+import 'package:flutter_chit_chat/services/firestore_db_service.dart';
 
 import '../locator.dart';
 
@@ -10,8 +11,9 @@ enum AppMode { DEBUG, RELEASE }
 class UserRepository implements AuthBase{
   final FirebaseAuthService _firebaseAuthService = locator<FirebaseAuthService>();
   final FakeAuthService _fakeAuthService = locator<FakeAuthService>();
+  final FirestoreDBService _firestoreService = locator<FirestoreDBService>();
 
-  AppMode appMode = AppMode.DEBUG;
+  AppMode appMode = AppMode.RELEASE;
 
   @override
   Future<UserModel> currentUser() async{
@@ -45,7 +47,17 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.DEBUG){
       return await _fakeAuthService.signInWithGoogle();
     }else {
-      return await _firebaseAuthService.signInWithGoogle();
+      final googleUser = await _firebaseAuthService.signInWithGoogle();
+      if(googleUser != null){
+        var sonuc = await _firestoreService.saveUserDataToFirestore(googleUser);
+        if(sonuc){
+          return googleUser;
+        }else{
+          return null;
+        }
+      }else{
+        return null;
+      }
     }
   }
 
@@ -72,7 +84,16 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.DEBUG){
       return await _fakeAuthService.signUpWithEmail(email, password);
     }else {
-      return await _firebaseAuthService.signUpWithEmail(email, password);
+      UserModel? registeredUser = await _firebaseAuthService.signUpWithEmail(email, password);
+      if(registeredUser != null){
+        var sonuc = await _firestoreService.saveUserDataToFirestore(registeredUser);
+        if(sonuc){
+          return registeredUser;
+        }else{
+          return null;
+        }
+      }
+      return null;
     }
   }
 

@@ -86,42 +86,42 @@ class UserViewModel with ChangeNotifier {
     return result;
   }
 
-  Future<UserModel?> signInWithEmail(email, password) async{
+  Future<UserModel?> signInWithEmail(email, password) async {
     if (_emailVeSifreKontrol(email, password)) {
       viewState = ViewState.busy;
       final result = await _userRepository.signInWithEmail(email, password);
       userModel = result;
       viewState = ViewState.idle;
       return result;
-    }else{
+    } else {
       return null;
     }
   }
 
-  Future<UserModel?> signUpWithEmail(email, password) async{
-    if(_emailVeSifreKontrol(email, password)) {
+  Future<UserModel?> signUpWithEmail(email, password) async {
+    if (_emailVeSifreKontrol(email, password)) {
       viewState = ViewState.busy;
       final result = await _userRepository.signUpWithEmail(email, password);
       userModel = result;
       viewState = ViewState.idle;
       return result;
-    }else {
+    } else {
       return null;
     }
   }
 
-  bool _emailVeSifreKontrol(String email, String password){
+  bool _emailVeSifreKontrol(String email, String password) {
     bool result = true;
-    if(!email.contains('@')){
+    if (!email.contains('@')) {
       emailHataMesaji = "Geçersiz email adresi";
       result = false;
-    }else{
+    } else {
       emailHataMesaji = null;
     }
-    if(password.length < 6){
+    if (password.length < 6) {
       sifreHataMesaji = "Şifre en az 6 karakter uzunluğunda olmalı";
       result = false;
-    }else{
+    } else {
       sifreHataMesaji = null;
     }
     notifyListeners();

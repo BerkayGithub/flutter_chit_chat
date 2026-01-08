@@ -10,7 +10,7 @@ class FirebaseAuthService implements AuthBase {
 
   UserModel userFormFirebaseUser(User? firebaseUser) {
     if (firebaseUser != null) {
-      return UserModel(userID: firebaseUser.uid);
+      return UserModel(userID: firebaseUser.uid, email: firebaseUser.email);
     } else {
       throw Exception("You are not logged in");
     }
