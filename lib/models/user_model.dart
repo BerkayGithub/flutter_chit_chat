@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
@@ -15,7 +17,7 @@ class UserModel {
     return <String, dynamic>{
       'userID': userID,
       'email': email,
-      'username': username,
+      'username': username == '' ? '${email?.substring(0, email?.indexOf('@'))}${Random().nextInt(100)}' : username,
       'profilURL': profilURL,
       'createdAt': createdAt ?? '',
       'updatedAt': updatedAt ?? '',

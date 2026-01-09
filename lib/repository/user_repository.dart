@@ -51,7 +51,7 @@ class UserRepository implements AuthBase{
       if(googleUser != null){
         var sonuc = await _firestoreService.saveUserDataToFirestore(googleUser);
         if(sonuc){
-          return googleUser;
+          return await _firestoreService.readUserFromFirestore(googleUser.userID);
         }else{
           return null;
         }
@@ -75,7 +75,11 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.DEBUG){
       return await _fakeAuthService.signInWithEmail(email, password);
     }else {
-      return await _firebaseAuthService.signInWithEmail(email, password);
+      UserModel? user = await _firebaseAuthService.signInWithEmail(email, password);
+      if(user != null){
+        await _firestoreService.readUserFromFirestore(user.userID);
+      }
+      return user;
     }
   }
 

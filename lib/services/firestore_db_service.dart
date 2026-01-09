@@ -26,4 +26,18 @@ class FirestoreDBService implements DBBase {
       return false;
     }
   }
+
+  @override
+  Future<UserModel?> readUserFromFirestore(String userID) async{
+    try {
+      DocumentSnapshot okunanUser = await _firebaseFirestore.doc("users/$userID").get();
+      Map<String, dynamic> okunanUserBilgileriMap = okunanUser.data() as Map<String, dynamic>;
+      UserModel user = UserModel.fromMap(okunanUserBilgileriMap);
+      debugPrint("Okunan user nesnesi $user");
+      return user;
+    } on Exception catch (e) {
+      debugPrint("READ USER FROM FIRESTORE HATA : $e");
+      return null;
+    }
+  }
 }
