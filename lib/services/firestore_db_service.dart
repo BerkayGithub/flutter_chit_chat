@@ -18,8 +18,8 @@ class FirestoreDBService implements DBBase {
           .set(eklenecekUser);
       DocumentSnapshot okunanUser = await _firebaseFirestore.doc("users/${user.userID}").get();
       Map<String,dynamic> okunanUserBilgileriMap = okunanUser.data() as Map<String, dynamic>;
-      UserModel _okunanUserBilgileriNesne = UserModel.fromMap(okunanUserBilgileriMap);
-      debugPrint("Kaydedilen user $_okunanUserBilgileriNesne");
+      UserModel okunanUserBilgileriNesne = UserModel.fromMap(okunanUserBilgileriMap);
+      debugPrint("Kaydedilen user $okunanUserBilgileriNesne");
       return true;
     } catch (e) {
       debugPrint("HATA SAVE USER DATA TO FIRESTORE ${e.toString()}");

@@ -3,7 +3,7 @@ import 'package:flutter_chit_chat/sign_in/sign_in_page.dart';
 import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page.dart';
+import 'home/home_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
