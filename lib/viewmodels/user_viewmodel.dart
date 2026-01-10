@@ -72,7 +72,10 @@ class UserViewModel with ChangeNotifier {
 
   Future<UserModel?> signInWithGoogle() async {
     viewState = ViewState.busy;
-    final sonuc = await _userRepository.signInWithGoogle();
+    final sonuc = await _userRepository.signInWithGoogle().onError((Exception e, _){
+      viewState = ViewState.idle;
+      throw e;
+    });
     userModel = sonuc;
     viewState = ViewState.idle;
     return sonuc;
@@ -89,7 +92,10 @@ class UserViewModel with ChangeNotifier {
   Future<UserModel?> signInWithEmail(email, password) async {
     if (_emailVeSifreKontrol(email, password)) {
       viewState = ViewState.busy;
-      final result = await _userRepository.signInWithEmail(email, password);
+      final result = await _userRepository.signInWithEmail(email, password).onError((Exception e, _){
+        viewState = ViewState.idle;
+        throw e;
+      });
       userModel = result;
       viewState = ViewState.idle;
       return result;
@@ -101,7 +107,10 @@ class UserViewModel with ChangeNotifier {
   Future<UserModel?> signUpWithEmail(email, password) async {
     if (_emailVeSifreKontrol(email, password)) {
       viewState = ViewState.busy;
-      final result = await _userRepository.signUpWithEmail(email, password);
+      final result = await _userRepository.signUpWithEmail(email, password).onError((Exception e, _){
+        viewState = ViewState.idle;
+        throw e;
+      });
       userModel = result;
       viewState = ViewState.idle;
       return result;

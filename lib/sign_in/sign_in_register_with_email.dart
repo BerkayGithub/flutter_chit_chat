@@ -93,11 +93,19 @@ class _SignInRegisterWithEmailState extends State<SignInRegisterWithEmail> {
     _formKey.currentState?.save();
     debugPrint("email: $_email şifre: $_password");
     if (_formType == FormType.login) {
-      final user = await Provider.of<UserViewModel>(context, listen: false).signInWithEmail(_email, _password);
-      afterSignInOrRegister(user);
+      try {
+        final user = await Provider.of<UserViewModel>(context, listen: false).signInWithEmail(_email, _password);
+        afterSignInOrRegister(user);
+      } on Exception catch (e) {
+        debugPrint("Widget giriş yaparken hata yakalandı : $e");
+      }
     } else {
-      final user = await Provider.of<UserViewModel>(context, listen: false).signUpWithEmail(_email, _password);
-      afterSignInOrRegister(user);
+      try {
+        final user = await Provider.of<UserViewModel>(context, listen: false).signUpWithEmail(_email, _password);
+        afterSignInOrRegister(user);
+      } on Exception catch (e) {
+        debugPrint("Widget kayıt hata yakalandı : $e");
+      }
     }
   }
 

@@ -26,6 +26,10 @@ class Profil extends StatelessWidget {
   }
 
   void _cikisYap(BuildContext context) async {
-    await Provider.of<UserViewModel>(context, listen: false).signOut();
+    try {
+      await Provider.of<UserViewModel>(context, listen: false).signOut();
+    } on Exception catch (e) {
+      debugPrint("HATA çıkışYap ${e.toString()}");
+    }
   }
 }

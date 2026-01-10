@@ -48,8 +48,7 @@ class FirebaseAuthService implements AuthBase {
       await _firebaseAuth.signOut();
       return true;
     } on Exception catch (e) {
-      debugPrint("HATA SIGN OUT ${e.toString()}");
-      return false;
+      rethrow;
     }
   }
 
@@ -71,12 +70,9 @@ class FirebaseAuthService implements AuthBase {
       User? firebaseUser = _firebaseAuth.currentUser;
       return userFormFirebaseUser(firebaseUser);
     } on FirebaseAuthException catch (e) {
-      debugPrint('Firebase Auth Error: ${e.message}');
-      // Handle Firebase specific errors (e.g., account-exists-with-different-credential)
-      return null;
+      rethrow;
     } catch (e) {
-      debugPrint("HATA SIGN IN WITH GOOGLE ${e.toString()}");
-      return null;
+      rethrow;
     }
   }
 
@@ -117,11 +113,9 @@ class FirebaseAuthService implements AuthBase {
         return userFormFirebaseUser(firebaseUser);
       }
     } on FirebaseAuthException catch (e) {
-      debugPrint('Firebase Auth Error: ${e.message}');
-      return null;
+      rethrow;
     } catch (e) {
-      debugPrint("HATA SIGN IN WITH EMAIL ${e.toString()}");
-      return null;
+      rethrow;
     }
   }
 
@@ -136,11 +130,9 @@ class FirebaseAuthService implements AuthBase {
         return userFormFirebaseUser(firebaseUser);
       }
     } on FirebaseAuthException catch (e) {
-      debugPrint('Firebase Auth Error: ${e.message}');
-      return null;
+      rethrow;
     } catch (e) {
-      debugPrint("HATA SIGN IN WITH EMAIL ${e.toString()}");
-      return null;
+      rethrow;
     }
   }
 }

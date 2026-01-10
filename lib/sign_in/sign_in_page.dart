@@ -26,11 +26,27 @@ class SignInPage extends StatelessWidget {
   }
 
   void _googleIleGirisYap(BuildContext context) async{
-    await Provider.of<UserViewModel>(context,listen: false).signInWithGoogle();
+    try {
+      await Provider.of<UserViewModel>(context,listen: false).signInWithGoogle();
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Firebase Auth Error: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint("HATA googleIleGirisYap ${e.toString()}");
+      return null;
+    }
   }
 
   void _facebookIleGirisYap(BuildContext context) async{
-    await Provider.of<UserViewModel>(context, listen: false).signInWithFacebook();
+    try {
+      await Provider.of<UserViewModel>(context, listen: false).signInWithFacebook();
+    } on FirebaseAuthException catch (e) {
+      debugPrint('Firebase Auth Error: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint("HATA facebookIleGirisYap ${e.toString()}");
+      return null;
+    }
   }
 
   void _emailIleGirisYap(BuildContext context) {
