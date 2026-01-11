@@ -47,7 +47,7 @@ class FirebaseAuthService implements AuthBase {
       await FacebookAuth.instance.logOut();
       await _firebaseAuth.signOut();
       return true;
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }
@@ -69,7 +69,7 @@ class FirebaseAuthService implements AuthBase {
       await _firebaseAuth.signInWithCredential(credential);
       User? firebaseUser = _firebaseAuth.currentUser;
       return userFormFirebaseUser(firebaseUser);
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       rethrow;
@@ -112,7 +112,7 @@ class FirebaseAuthService implements AuthBase {
       } else {
         return userFormFirebaseUser(firebaseUser);
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       rethrow;
@@ -129,7 +129,7 @@ class FirebaseAuthService implements AuthBase {
       } else {
         return userFormFirebaseUser(firebaseUser);
       }
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       rethrow;

@@ -20,7 +20,11 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.DEBUG){
       return await _fakeAuthService.currentUser();
     }else {
-      return await _firebaseAuthService.currentUser();
+      UserModel firebaseUser = await _firebaseAuthService.currentUser().onError((Exception e, _){
+        throw e;
+      });
+      UserModel? currentUser = await _firestoreService.readUserFromFirestore(firebaseUser.userID);
+      return currentUser!;
     }
   }
 
@@ -77,7 +81,7 @@ class UserRepository implements AuthBase{
     }else {
       UserModel? user = await _firebaseAuthService.signInWithEmail(email, password);
       if(user != null){
-        await _firestoreService.readUserFromFirestore(user.userID);
+        user = await _firestoreService.readUserFromFirestore(user.userID);
       }
       return user;
     }
@@ -92,7 +96,7 @@ class UserRepository implements AuthBase{
       if(registeredUser != null){
         var sonuc = await _firestoreService.saveUserDataToFirestore(registeredUser);
         if(sonuc){
-          return registeredUser;
+          return await _firestoreService.readUserFromFirestore(registeredUser.userID);
         }else{
           return null;
         }
@@ -101,4 +105,11 @@ class UserRepository implements AuthBase{
     }
   }
 
+  Future<bool?> updateUserProfile(String userID, String newUsername) async{
+    if(appMode == AppMode.DEBUG){
+      return false;
+    }else{
+      return await _firestoreService.updateUserName(userID, newUsername);
+    }
+  }
 }

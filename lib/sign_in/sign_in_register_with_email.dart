@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chit_chat/hatalar.dart';
@@ -133,7 +130,7 @@ class _SignInRegisterWithEmailState extends State<SignInRegisterWithEmail> {
   void afterSignInOrRegister(UserModel? user) {
     if (user != null) {
       debugPrint("Oturum açan user ${user.userID}");
-      Future.delayed(Duration(milliseconds: 50), () {
+      Future.delayed(Duration(milliseconds: 20), () {
         Navigator.of(context).pop();
       });
     }

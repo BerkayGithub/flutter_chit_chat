@@ -16,9 +16,14 @@ class FirestoreDBService implements DBBase {
           .collection('users')
           .doc(user.userID)
           .set(eklenecekUser);
-      DocumentSnapshot okunanUser = await _firebaseFirestore.doc("users/${user.userID}").get();
-      Map<String,dynamic> okunanUserBilgileriMap = okunanUser.data() as Map<String, dynamic>;
-      UserModel okunanUserBilgileriNesne = UserModel.fromMap(okunanUserBilgileriMap);
+      DocumentSnapshot okunanUser = await _firebaseFirestore
+          .doc("users/${user.userID}")
+          .get();
+      Map<String, dynamic> okunanUserBilgileriMap =
+          okunanUser.data() as Map<String, dynamic>;
+      UserModel okunanUserBilgileriNesne = UserModel.fromMap(
+        okunanUserBilgileriMap,
+      );
       debugPrint("Kaydedilen user $okunanUserBilgileriNesne");
       return true;
     } catch (e) {
@@ -28,16 +33,39 @@ class FirestoreDBService implements DBBase {
   }
 
   @override
-  Future<UserModel?> readUserFromFirestore(String userID) async{
+  Future<UserModel?> readUserFromFirestore(String userID) async {
     try {
-      DocumentSnapshot okunanUser = await _firebaseFirestore.doc("users/$userID").get();
-      Map<String, dynamic> okunanUserBilgileriMap = okunanUser.data() as Map<String, dynamic>;
+      DocumentSnapshot okunanUser = await _firebaseFirestore
+          .doc("users/$userID")
+          .get();
+      Map<String, dynamic> okunanUserBilgileriMap =
+          okunanUser.data() as Map<String, dynamic>;
       UserModel user = UserModel.fromMap(okunanUserBilgileriMap);
       debugPrint("Okunan user nesnesi $user");
       return user;
     } on Exception catch (e) {
       debugPrint("READ USER FROM FIRESTORE HATA : $e");
       return null;
+    }
+  }
+
+  @override
+  Future<bool?> updateUserName(String userID, String newUsername) async {
+    try {
+      var users = await _firebaseFirestore
+          .collection('users')
+          .where('username', isEqualTo: newUsername)
+          .get();
+      if (users.size >= 1) {
+        return false;
+      }
+      await _firebaseFirestore.collection('users').doc(userID).update({
+        'username': newUsername,
+      });
+      return true;
+    } on Exception catch (e) {
+      debugPrint("UPDATE USER HATA : $e");
+      return false;
     }
   }
 }

@@ -6,7 +6,7 @@ class UserModel {
   String userID;
   String? email;
   String username = '';
-  String profilURL = '';
+  String profilURL = 'https://i.scdn.co/image/ab67656300005f1fdad4c3d1172547ae54ea9178';
   DateTime? createdAt;
   DateTime? updatedAt;
   int seviye = 1;
@@ -18,7 +18,7 @@ class UserModel {
       'userID': userID,
       'email': email,
       'username': username == '' ? '${email?.substring(0, email?.indexOf('@'))}${Random().nextInt(100)}' : username,
-      'profilURL': profilURL,
+      'profilURL': profilURL == '' ? 'https://i.scdn.co/image/ab67656300005f1fdad4c3d1172547ae54ea9178' : profilURL,
       'createdAt': createdAt ?? '',
       'updatedAt': updatedAt ?? '',
       'seviye': seviye
@@ -30,7 +30,7 @@ class UserModel {
         userID = userMap['userID'],
         email = userMap['email'],
         username = userMap['username'],
-        profilURL = userMap['profilURL'],
+        profilURL = userMap['profilURL'] == '' ? 'https://i.scdn.co/image/ab67656300005f1fdad4c3d1172547ae54ea9178' : userMap['profilURL'],
         createdAt = (userMap['createdAt'] as Timestamp).toDate(),
         updatedAt = (userMap['updatedAt'] as Timestamp).toDate(),
         seviye = userMap['seviye'];
