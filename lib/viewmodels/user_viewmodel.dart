@@ -11,6 +11,7 @@ class UserViewModel with ChangeNotifier {
   UserModel? _userModel;
   String? emailHataMesaji;
   String? sifreHataMesaji;
+  List<UserModel>? userList;
 
   UserViewModel() {
     currentUser();
@@ -139,5 +140,9 @@ class UserViewModel with ChangeNotifier {
 
   Future<bool?> profiliGuncelle(String userID, String newUsername) async {
     return await _userRepository.updateUserProfile(userID, newUsername);
+  }
+
+  Future<List<UserModel>> getAllUsers() async {
+    return _userRepository.getAllUsers();
   }
 }
