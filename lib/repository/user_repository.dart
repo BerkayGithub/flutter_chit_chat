@@ -1,3 +1,4 @@
+import 'package:flutter_chit_chat/models/mesaj.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/services/fake_auth_service.dart';
@@ -118,6 +119,20 @@ class UserRepository implements AuthBase{
       return [];
     }else{
       return await _firestoreService.getAllUsers();
+    }
+  }
+
+  Stream<List<Mesaj>> mesajlariCek(String currentUserID, String konusulanUserID){
+    if(appMode == AppMode.DEBUG){
+      return Stream.empty();
+    }else{
+      return _firestoreService.getMessages(currentUserID, konusulanUserID);
+    }
+  }
+
+  Future<void> mesajGonder(String text, UserModel suankiUser, UserModel sohbetEdilenUser) async{
+    if(appMode == AppMode.RELEASE){
+      return await _firestoreService.sendMessage(text, suankiUser, sohbetEdilenUser);
     }
   }
 }

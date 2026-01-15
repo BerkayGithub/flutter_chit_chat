@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/locator.dart';
+import 'package:flutter_chit_chat/models/mesaj.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/repository/user_repository.dart';
 
@@ -144,5 +145,13 @@ class UserViewModel with ChangeNotifier {
 
   Future<List<UserModel>> getAllUsers() async {
     return _userRepository.getAllUsers();
+  }
+
+  Future<void> mesajGonder(String text, UserModel suankiUser, UserModel sohbetEdilenUser) async {
+    await _userRepository.mesajGonder(text, suankiUser, sohbetEdilenUser);
+  }
+
+  Stream<List<Mesaj>> mesajlariCek(String currentUserID, String konusulanUserID){
+    return _userRepository.mesajlariCek(currentUserID, konusulanUserID);
   }
 }

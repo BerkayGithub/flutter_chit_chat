@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_chit_chat/models/mesaj.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/db_base.dart';
 
@@ -71,16 +72,76 @@ class FirestoreDBService implements DBBase {
 
   @override
   Future<List<UserModel>> getAllUsers() async {
-    try{
+    try {
       List<UserModel> userList = [];
-      QuerySnapshot<Map<String,dynamic>> querySnapshot = await _firebaseFirestore.collection('users').get();
-      for(QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs){
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await _firebaseFirestore.collection('users').get();
+      for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot
+          in querySnapshot.docs) {
         UserModel userModel = UserModel.fromMap(documentSnapshot.data());
         userList.add(userModel);
       }
       return userList;
-    }catch(e){
+    } catch (e) {
       return List<UserModel>.empty();
     }
+  }
+
+  @override
+  Stream<List<Mesaj>> getMessages(
+    String currentUserID,
+    String konusulanUserID,
+  ) {
+    var snapshot = _firebaseFirestore
+        .collection('konusmalar')
+        .doc('$currentUserID--$konusulanUserID')
+        .collection('mesajlar')
+        .orderBy('dateTime', descending: true)
+        .snapshots();
+    return snapshot.map(
+      (mesajListesi) => mesajListesi.docs
+          .map((mesaj) => Mesaj.fromMap(mesaj.data()))
+          .toList(),
+    );
+  }
+
+  @override
+  Future<void> sendMessage(
+    String text,
+    UserModel suankiUser,
+    UserModel sohbetEdilenUser,
+  ) async {
+
+    final messageId = await _firebaseFirestore
+        .collection('konusmalar')
+        //.doc('${suankiUser.userID}--${sohbetEdilenUser.userID}')
+        //.collection('mesajlar')
+        .doc()
+        .id;
+
+    Mesaj mesaj = Mesaj(
+      messageId: messageId,
+      gonderen: suankiUser.username,
+      alan: sohbetEdilenUser.username,
+      messageText: text,
+      dateTime: DateTime.now(),
+      bendenMi: true,
+    );
+
+    await _firebaseFirestore
+        .collection('konusmalar')
+        .doc('${suankiUser.userID}--${sohbetEdilenUser.userID}')
+        .collection('mesajlar')
+        .doc(messageId)
+        .set(mesaj.toMap());
+
+    mesaj.bendenMi = false;
+
+    await _firebaseFirestore
+        .collection('konusmalar')
+        .doc('${sohbetEdilenUser.userID}--${suankiUser.userID}')
+        .collection('mesajlar')
+        .doc(messageId)
+        .set(mesaj.toMap());
   }
 }
