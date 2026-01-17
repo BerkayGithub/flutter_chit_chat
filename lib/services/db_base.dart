@@ -1,4 +1,5 @@
 import 'package:flutter_chit_chat/models/mesaj.dart';
+import 'package:flutter_chit_chat/models/sohbet.dart';
 
 import '../models/user_model.dart';
 
@@ -9,4 +10,6 @@ abstract class DBBase{
   Future<List<UserModel>> getAllUsers();
   Stream<List<Mesaj>> getMessages(String currentUserID, String konusulanUserID);
   Future<void> sendMessage(String text, UserModel suankiUser, UserModel sohbetEdilenUser);
+  Future<List<Sohbet>> getMyConversations(String userId);
+  Future<DateTime> saatiGoster(String userID);
 }

@@ -1,9 +1,11 @@
 import 'package:flutter_chit_chat/models/mesaj.dart';
+import 'package:flutter_chit_chat/models/sohbet.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/services/fake_auth_service.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/services/firestore_db_service.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../locator.dart';
 
@@ -15,6 +17,7 @@ class UserRepository implements AuthBase{
   final FirestoreDBService _firestoreService = locator<FirestoreDBService>();
 
   AppMode appMode = AppMode.RELEASE;
+  var tumKullanicilarListesi = <UserModel>[];
 
   @override
   Future<UserModel> currentUser() async{
@@ -118,7 +121,8 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.DEBUG){
       return [];
     }else{
-      return await _firestoreService.getAllUsers();
+      tumKullanicilarListesi = await _firestoreService.getAllUsers();
+      return tumKullanicilarListesi;
     }
   }
 
@@ -134,5 +138,42 @@ class UserRepository implements AuthBase{
     if(appMode == AppMode.RELEASE){
       return await _firestoreService.sendMessage(text, suankiUser, sohbetEdilenUser);
     }
+  }
+
+  Future<List<Sohbet>> getMyConversations(String userId) async {
+    DateTime _zaman = await _firestoreService.saatiGoster(userId);
+    var konusmalarimListesi = await _firestoreService.getMyConversations(userId);
+    for(Sohbet oankiKonusma in konusmalarimListesi){
+      var konusulanUser = listedeUserBul(oankiKonusma.kiminle);
+      if(konusulanUser != null){
+        oankiKonusma.konusulanKisiIsmi = konusulanUser.username;
+        oankiKonusma.konusulanKisiResmi = konusulanUser.profilURL;
+      }else{
+        konusulanUser = await _firestoreService.readUserFromFirestore(userId);
+        oankiKonusma.konusulanKisiIsmi = konusulanUser!.username;
+        oankiKonusma.konusulanKisiResmi = konusulanUser.profilURL;
+      }
+      timeagoHesapla(oankiKonusma, _zaman);
+    }
+    return konusmalarimListesi;
+  }
+
+  UserModel? listedeUserBul(String kiminle) {
+    for(UserModel user in tumKullanicilarListesi){
+      if(user.userID == kiminle){
+        return user;
+      }
+    }
+    return null;
+  }
+
+  void timeagoHesapla(Sohbet oankiKonusma, DateTime zaman) {
+    oankiKonusma.sonOkunmaZamani = zaman;
+
+    timeago.setLocaleMessages("tr", timeago.TrMessages());
+
+    var _duration = zaman.difference(oankiKonusma.olusturulmaTarihi!.toDate());
+    oankiKonusma.aradakiFark =
+        timeago.format(zaman.subtract(_duration), locale: "tr");
   }
 }

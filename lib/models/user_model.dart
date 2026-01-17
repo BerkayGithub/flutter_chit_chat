@@ -35,6 +35,8 @@ class UserModel {
         updatedAt = (userMap['updatedAt'] as Timestamp).toDate(),
         seviye = userMap['seviye'];
 
+  UserModel.fromIdAndPicture({required this.userID, required this.profilURL});
+
   @override
   String toString() {
     return 'UserModel{userID: $userID, email: $email, username: $username, profilURL: $profilURL, createdAt: $createdAt, updatedAt: $updatedAt, seviye: $seviye}';

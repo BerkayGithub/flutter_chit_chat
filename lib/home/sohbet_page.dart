@@ -4,8 +4,8 @@ import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class Sohbet extends StatefulWidget {
-  const Sohbet({
+class SohbetPage extends StatefulWidget {
+  const SohbetPage({
     super.key,
     required this.suankiUser,
     required this.sohbetEdilenUser,
@@ -15,10 +15,10 @@ class Sohbet extends StatefulWidget {
   final UserModel sohbetEdilenUser;
 
   @override
-  State<Sohbet> createState() => _SohbetState();
+  State<SohbetPage> createState() => _SohbetPageState();
 }
 
-class _SohbetState extends State<Sohbet> {
+class _SohbetPageState extends State<SohbetPage> {
   TextEditingController textEditingController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 

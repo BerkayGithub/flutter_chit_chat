@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chit_chat/home/konusmalarim.dart';
 import 'package:flutter_chit_chat/home/kullanicilar.dart';
 import 'package:flutter_chit_chat/home/profil.dart';
 import 'package:flutter_chit_chat/home/tab_items.dart';
@@ -24,11 +25,13 @@ class _HomePageState extends State<HomePage> {
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.kullanicilar: GlobalKey<NavigatorState>(),
     TabItem.profil: GlobalKey<NavigatorState>(),
+    TabItem.konusmalarim: GlobalKey<NavigatorState>(),
   };
 
   Map<TabItem, Widget> tumSayfalar = {
     TabItem.kullanicilar: Kullanicilar(),
     TabItem.profil: Profil(),
+    TabItem.konusmalarim: Konusmalarim(),
   };
 
   @override

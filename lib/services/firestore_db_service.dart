@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_chit_chat/models/mesaj.dart';
+import 'package:flutter_chit_chat/models/sohbet.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/db_base.dart';
 
@@ -112,10 +115,8 @@ class FirestoreDBService implements DBBase {
     UserModel sohbetEdilenUser,
   ) async {
 
-    final messageId = await _firebaseFirestore
+    final messageId = _firebaseFirestore
         .collection('konusmalar')
-        //.doc('${suankiUser.userID}--${sohbetEdilenUser.userID}')
-        //.collection('mesajlar')
         .doc()
         .id;
 
@@ -135,6 +136,16 @@ class FirestoreDBService implements DBBase {
         .doc(messageId)
         .set(mesaj.toMap());
 
+    await _firebaseFirestore
+        .collection('konusmalar')
+        .doc('${suankiUser.userID}--${sohbetEdilenUser.userID}').set({
+      "kimden": suankiUser.userID,
+      "kiminle": sohbetEdilenUser.userID,
+      "sonYollananMesaj": text,
+      "goruldu": false,
+      "olusturulmaTarihi": FieldValue.serverTimestamp(),
+    });
+
     mesaj.bendenMi = false;
 
     await _firebaseFirestore
@@ -143,5 +154,46 @@ class FirestoreDBService implements DBBase {
         .collection('mesajlar')
         .doc(messageId)
         .set(mesaj.toMap());
+
+    await _firebaseFirestore
+        .collection('konusmalar')
+        .doc('${sohbetEdilenUser.userID}--${suankiUser.userID}').set({
+      "kimden": sohbetEdilenUser.userID,
+      "kiminle": suankiUser.userID,
+      "sonYollananMesaj": text,
+      "goruldu": false,
+      "olusturulmaTarihi": FieldValue.serverTimestamp(),
+    });
+
+  }
+
+  @override
+  Future<List<Sohbet>> getMyConversations(String userId) async{
+    List<Sohbet> konustugumKisiler = [];
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+      await FirebaseFirestore.instance.
+      collection('konusmalar').
+      where('kimden', isEqualTo: userId).orderBy('olusturulmaTarihi', descending: true).get();
+      for(QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot in querySnapshot.docs){
+        Sohbet sohbet = Sohbet.fromMap(queryDocumentSnapshot.data());
+        konustugumKisiler.add(sohbet);
+      }
+    } on Exception catch (e) {
+      debugPrint("ERROR KONUSTUKLARIMI GETIR $e");
+    }
+    return konustugumKisiler;
+  }
+
+  @override
+  Future<DateTime> saatiGoster(String userID) async {
+    await _firebaseFirestore.collection("server").doc(userID).set({
+      "saat": FieldValue.serverTimestamp(),
+    });
+
+    var okunanMap =
+    await _firebaseFirestore.collection("server").doc(userID).get();
+    Timestamp okunanTarih = okunanMap.data()?["saat"];
+    return okunanTarih.toDate();
   }
 }

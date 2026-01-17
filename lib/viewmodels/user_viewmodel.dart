@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/locator.dart';
 import 'package:flutter_chit_chat/models/mesaj.dart';
+import 'package:flutter_chit_chat/models/sohbet.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/repository/user_repository.dart';
 
@@ -153,5 +154,9 @@ class UserViewModel with ChangeNotifier {
 
   Stream<List<Mesaj>> mesajlariCek(String currentUserID, String konusulanUserID){
     return _userRepository.mesajlariCek(currentUserID, konusulanUserID);
+  }
+
+  Future<List<Sohbet>> getMyConversations(String userId) async{
+    return _userRepository.getMyConversations(userId);
   }
 }
