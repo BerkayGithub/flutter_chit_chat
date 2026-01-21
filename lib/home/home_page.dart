@@ -7,6 +7,8 @@ import 'package:flutter_chit_chat/locator.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
+import 'package:flutter_chit_chat/viewmodels/all_user_viewmodel.dart';
+import 'package:provider/provider.dart';
 import 'bottom_navigation_tab_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +31,10 @@ class _HomePageState extends State<HomePage> {
   };
 
   Map<TabItem, Widget> tumSayfalar = {
-    TabItem.kullanicilar: Kullanicilar(),
+    TabItem.kullanicilar: ChangeNotifierProvider<AllUsersViewmodel>(
+      create: (_) => AllUsersViewmodel(),
+      builder: (context, child) => Kullanicilar(),
+    ),
     TabItem.profil: Profil(),
     TabItem.konusmalarim: Konusmalarim(),
   };

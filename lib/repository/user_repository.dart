@@ -176,4 +176,14 @@ class UserRepository implements AuthBase{
     oankiKonusma.aradakiFark =
         timeago.format(zaman.subtract(_duration), locale: "tr");
   }
+
+  Future<List<UserModel>> getAllUsersWithPagination(int numberOfUsers, UserModel? sonGelenUser) async{
+    if(appMode == AppMode.DEBUG){
+      return [];
+    }else{
+      var users = await _firestoreService.getUsersWithPagination(numberOfUsers, sonGelenUser);
+      tumKullanicilarListesi.addAll(users);
+      return users;
+    }
+  }
 }

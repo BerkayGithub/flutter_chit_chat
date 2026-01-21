@@ -12,4 +12,5 @@ abstract class DBBase{
   Future<void> sendMessage(String text, UserModel suankiUser, UserModel sohbetEdilenUser);
   Future<List<Sohbet>> getMyConversations(String userId);
   Future<DateTime> saatiGoster(String userID);
+  Future<List<UserModel>> getUsersWithPagination(int userSayisi, UserModel? sonGelenUser);
 }

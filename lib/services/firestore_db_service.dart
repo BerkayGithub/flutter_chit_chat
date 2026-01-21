@@ -114,11 +114,7 @@ class FirestoreDBService implements DBBase {
     UserModel suankiUser,
     UserModel sohbetEdilenUser,
   ) async {
-
-    final messageId = _firebaseFirestore
-        .collection('konusmalar')
-        .doc()
-        .id;
+    final messageId = _firebaseFirestore.collection('konusmalar').doc().id;
 
     Mesaj mesaj = Mesaj(
       messageId: messageId,
@@ -138,13 +134,14 @@ class FirestoreDBService implements DBBase {
 
     await _firebaseFirestore
         .collection('konusmalar')
-        .doc('${suankiUser.userID}--${sohbetEdilenUser.userID}').set({
-      "kimden": suankiUser.userID,
-      "kiminle": sohbetEdilenUser.userID,
-      "sonYollananMesaj": text,
-      "goruldu": false,
-      "olusturulmaTarihi": FieldValue.serverTimestamp(),
-    });
+        .doc('${suankiUser.userID}--${sohbetEdilenUser.userID}')
+        .set({
+          "kimden": suankiUser.userID,
+          "kiminle": sohbetEdilenUser.userID,
+          "sonYollananMesaj": text,
+          "goruldu": false,
+          "olusturulmaTarihi": FieldValue.serverTimestamp(),
+        });
 
     mesaj.bendenMi = false;
 
@@ -157,25 +154,28 @@ class FirestoreDBService implements DBBase {
 
     await _firebaseFirestore
         .collection('konusmalar')
-        .doc('${sohbetEdilenUser.userID}--${suankiUser.userID}').set({
-      "kimden": sohbetEdilenUser.userID,
-      "kiminle": suankiUser.userID,
-      "sonYollananMesaj": text,
-      "goruldu": false,
-      "olusturulmaTarihi": FieldValue.serverTimestamp(),
-    });
-
+        .doc('${sohbetEdilenUser.userID}--${suankiUser.userID}')
+        .set({
+          "kimden": sohbetEdilenUser.userID,
+          "kiminle": suankiUser.userID,
+          "sonYollananMesaj": text,
+          "goruldu": false,
+          "olusturulmaTarihi": FieldValue.serverTimestamp(),
+        });
   }
 
   @override
-  Future<List<Sohbet>> getMyConversations(String userId) async{
+  Future<List<Sohbet>> getMyConversations(String userId) async {
     List<Sohbet> konustugumKisiler = [];
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await FirebaseFirestore.instance.
-      collection('konusmalar').
-      where('kimden', isEqualTo: userId).orderBy('olusturulmaTarihi', descending: true).get();
-      for(QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot in querySnapshot.docs){
+          await FirebaseFirestore.instance
+              .collection('konusmalar')
+              .where('kimden', isEqualTo: userId)
+              .orderBy('olusturulmaTarihi', descending: true)
+              .get();
+      for (QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot
+          in querySnapshot.docs) {
         Sohbet sohbet = Sohbet.fromMap(queryDocumentSnapshot.data());
         konustugumKisiler.add(sohbet);
       }
@@ -191,9 +191,44 @@ class FirestoreDBService implements DBBase {
       "saat": FieldValue.serverTimestamp(),
     });
 
-    var okunanMap =
-    await _firebaseFirestore.collection("server").doc(userID).get();
+    var okunanMap = await _firebaseFirestore
+        .collection("server")
+        .doc(userID)
+        .get();
     Timestamp okunanTarih = okunanMap.data()?["saat"];
     return okunanTarih.toDate();
+  }
+
+  @override
+  Future<List<UserModel>> getUsersWithPagination(
+    int userSayisi,
+    UserModel? sonGelenUser,
+  ) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot;
+      List<UserModel> userList = [];
+      if (sonGelenUser == null) {
+        querySnapshot = await _firebaseFirestore
+            .collection('users')
+            .orderBy('username')
+            .limit(userSayisi)
+            .get();
+      } else {
+        querySnapshot = await _firebaseFirestore
+            .collection('users')
+            .orderBy('username')
+            .startAfter([sonGelenUser.username])
+            .limit(userSayisi)
+            .get();
+      }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot
+          in querySnapshot.docs) {
+        UserModel userModel = UserModel.fromMap(documentSnapshot.data());
+        userList.add(userModel);
+      }
+      return userList;
+    } catch (e) {
+      return List<UserModel>.empty();
+    }
   }
 }

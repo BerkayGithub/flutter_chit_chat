@@ -159,4 +159,8 @@ class UserViewModel with ChangeNotifier {
   Future<List<Sohbet>> getMyConversations(String userId) async{
     return _userRepository.getMyConversations(userId);
   }
+
+  Future<List<UserModel>> getUsersWithPagination(int numberOfUsers, UserModel? sonGelenUser){
+    return _userRepository.getAllUsersWithPagination(numberOfUsers, sonGelenUser);
+  }
 }
