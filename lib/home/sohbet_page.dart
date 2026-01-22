@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/models/mesaj.dart';
-import 'package:flutter_chit_chat/models/user_model.dart';
-import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
+import 'package:flutter_chit_chat/viewmodels/chat_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class SohbetPage extends StatefulWidget {
-  const SohbetPage({
-    super.key,
-    required this.suankiUser,
-    required this.sohbetEdilenUser,
-  });
-
-  final UserModel suankiUser;
-  final UserModel sohbetEdilenUser;
+  const SohbetPage({super.key});
 
   @override
   State<SohbetPage> createState() => _SohbetPageState();
@@ -23,32 +15,25 @@ class _SohbetPageState extends State<SohbetPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    _scrollController.addListener(() async{
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 25) {
+        await Provider.of<ChatViewmodel>(context, listen: false).eskiMesajlariYukle();
+      }
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    UserModel _suankiUser = widget.suankiUser;
-    UserModel _sohbetEdilenUser = widget.sohbetEdilenUser;
-    UserViewModel userViewModel = Provider.of<UserViewModel>(context);
+    ChatViewmodel chatViewmodel = Provider.of<ChatViewmodel>(context);
     return Scaffold(
       appBar: AppBar(title: Text('Sohbet')),
       body: Center(
         child: Column(
           children: <Widget>[
-            Expanded(
-              child: StreamBuilder<List<Mesaj>>(
-                stream: userViewModel.mesajlariCek(_suankiUser.userID, _sohbetEdilenUser.userID),
-                builder: (context, asyncSnapshot) {
-                  if (!asyncSnapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  var tumMesajlar = asyncSnapshot.data!;
-                  return ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                    return sohbetMesaji(tumMesajlar[index]);
-                  }, itemCount: tumMesajlar.length);
-                }
-              ),
-            ),
+            buildMessageList(),
             Container(
               padding: EdgeInsets.only(bottom: 24, left: 8, right: 8),
               child: Row(
@@ -77,10 +62,8 @@ class _SohbetPageState extends State<SohbetPage> {
                     margin: EdgeInsets.only(left: 4),
                     child: FloatingActionButton(
                       onPressed: () async {
-                        await userViewModel.mesajGonder(
-                          textEditingController.text,
-                          widget.suankiUser,
-                          widget.sohbetEdilenUser,
+                        await chatViewmodel.mesajGonder(
+                          textEditingController.text
                         );
                         textEditingController.text = '';
                         _scrollController.animateTo(
@@ -103,7 +86,35 @@ class _SohbetPageState extends State<SohbetPage> {
     );
   }
 
+  Expanded buildMessageList() {
+    ChatViewmodel chatViewmodel = Provider.of<ChatViewmodel>(context);
+    return Expanded(
+            child: ListView.builder(
+                controller: _scrollController,
+                reverse: true,
+                itemBuilder: (context, index) {
+                  if(index == chatViewmodel.tumMesajlar.length){
+                    if(chatViewmodel.hasMore!){
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }else{
+                      return Container();
+                    }
+                  }else{
+                    return sohbetMesaji(chatViewmodel.tumMesajlar[index]);
+                  }
+                }, itemCount: chatViewmodel.hasMore == true ?
+            chatViewmodel.tumMesajlar.length + 1 :
+            chatViewmodel.tumMesajlar.length),
+          );
+  }
+
   Widget sohbetMesaji(Mesaj mesaj) {
+    ChatViewmodel chatViewmodel = Provider.of<ChatViewmodel>(context);
     bool bendenMi = mesaj.bendenMi;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -113,7 +124,7 @@ class _SohbetPageState extends State<SohbetPage> {
           bendenMi == false ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(widget.sohbetEdilenUser.profilURL),
+              backgroundImage: NetworkImage(chatViewmodel.sohbetEdilenUser.profilURL),
             ),
           ) : Container(),
           Flexible(

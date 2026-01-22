@@ -231,4 +231,58 @@ class FirestoreDBService implements DBBase {
       return List<UserModel>.empty();
     }
   }
+
+  @override
+  Future<List<Mesaj>> getMoreMessagesWithPagination(
+      int mesajSayisi,
+      String currentUserId,
+      String konusulanUserId,
+      Mesaj? sonGelenMesaj
+  ) async {
+    try{
+      QuerySnapshot<Map<String, dynamic>> querySnapshot;
+      List<Mesaj> mesajlar = [];
+      if(sonGelenMesaj == null){
+         querySnapshot = await _firebaseFirestore.collection('konusmalar')
+            .doc('$currentUserId--$konusulanUserId')
+            .collection('mesajlar')
+            .orderBy('dateTime', descending: true)
+            .limit(mesajSayisi)
+            .get();
+      }else{
+        querySnapshot = await _firebaseFirestore.collection('konusmalar')
+            .doc('$currentUserId--$konusulanUserId')
+            .collection('mesajlar')
+            .orderBy('dateTime', descending: true)
+            .startAfter([sonGelenMesaj.dateTime])
+            .limit(mesajSayisi)
+            .get();
+
+        await Future.delayed(Duration(seconds: 1));
+      }
+      for (QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot in querySnapshot.docs){
+        Mesaj mesaj = Mesaj.fromMap(queryDocumentSnapshot.data());
+        mesajlar.add(mesaj);
+      }
+      return mesajlar;
+    } catch(e) {
+      return List<Mesaj>.empty();
+    }
+  }
+
+  @override
+  Stream<List<Mesaj>> getNewMessages(String currentId, String konusulanUserId) {
+    var snapshot = _firebaseFirestore
+        .collection('konusmalar')
+        .doc('$currentId--$konusulanUserId')
+        .collection('mesajlar')
+        .orderBy('dateTime', descending: true)
+        .limit(1)
+        .snapshots();
+    return snapshot.map(
+          (mesajListesi) => mesajListesi.docs
+          .map((mesaj) => Mesaj.fromMap(mesaj.data()))
+          .toList(),
+    );
+  }
 }

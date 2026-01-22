@@ -141,7 +141,7 @@ class UserRepository implements AuthBase{
   }
 
   Future<List<Sohbet>> getMyConversations(String userId) async {
-    DateTime _zaman = await _firestoreService.saatiGoster(userId);
+    DateTime zaman = await _firestoreService.saatiGoster(userId);
     var konusmalarimListesi = await _firestoreService.getMyConversations(userId);
     for(Sohbet oankiKonusma in konusmalarimListesi){
       var konusulanUser = listedeUserBul(oankiKonusma.kiminle);
@@ -153,7 +153,7 @@ class UserRepository implements AuthBase{
         oankiKonusma.konusulanKisiIsmi = konusulanUser!.username;
         oankiKonusma.konusulanKisiResmi = konusulanUser.profilURL;
       }
-      timeagoHesapla(oankiKonusma, _zaman);
+      timeagoHesapla(oankiKonusma, zaman);
     }
     return konusmalarimListesi;
   }
@@ -172,9 +172,9 @@ class UserRepository implements AuthBase{
 
     timeago.setLocaleMessages("tr", timeago.TrMessages());
 
-    var _duration = zaman.difference(oankiKonusma.olusturulmaTarihi!.toDate());
+    var duration = zaman.difference(oankiKonusma.olusturulmaTarihi!.toDate());
     oankiKonusma.aradakiFark =
-        timeago.format(zaman.subtract(_duration), locale: "tr");
+        timeago.format(zaman.subtract(duration), locale: "tr");
   }
 
   Future<List<UserModel>> getAllUsersWithPagination(int numberOfUsers, UserModel? sonGelenUser) async{
@@ -184,6 +184,23 @@ class UserRepository implements AuthBase{
       var users = await _firestoreService.getUsersWithPagination(numberOfUsers, sonGelenUser);
       tumKullanicilarListesi.addAll(users);
       return users;
+    }
+  }
+
+  Future<List<Mesaj>> eskiMesajlariYukle(int sayfaBasinaMesajSayisi, String suankiUserId, String sohbetEdilenUserId, Mesaj? sonGelenMesaj) async {
+    if(appMode == AppMode.DEBUG){
+      return [];
+    }else{
+      var messages = await _firestoreService.getMoreMessagesWithPagination(sayfaBasinaMesajSayisi, suankiUserId, sohbetEdilenUserId, sonGelenMesaj);
+      return messages;
+    }
+  }
+
+  Stream<List<Mesaj>> yeniMesajlariCek(String currentUserId, String konusulanUserId){
+    if(appMode == AppMode.DEBUG){
+      return Stream.empty();
+    }else{
+      return _firestoreService.getNewMessages(currentUserId, konusulanUserId);
     }
   }
 }

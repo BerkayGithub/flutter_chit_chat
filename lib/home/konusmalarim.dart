@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chit_chat/home/sohbet_page.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
+import 'package:flutter_chit_chat/viewmodels/chat_viewmodel.dart';
 import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class Konusmalarim extends StatefulWidget {
   const Konusmalarim({super.key});
@@ -38,15 +38,15 @@ class _KonusmalarimState extends State<Konusmalarim> {
                         onTap: () {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
-                              builder: (context) => SohbetPage(
-                                suankiUser: userViewModel.userModel!,
-                                sohbetEdilenUser: UserModel.fromIdAndPicture(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (_) => ChatViewmodel(userViewModel.userModel!, UserModel.fromIdAndPicture(
                                   userID: sohbetItem.kiminle,
                                   profilURL: sohbetItem.konusulanKisiResmi,
+                                )),
+                                child: SohbetPage(),
                                 ),
                               ),
-                            ),
-                          );
+                            );
                         },
                         child: ListTile(
                           leading: CircleAvatar(

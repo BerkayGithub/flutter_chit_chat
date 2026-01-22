@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_chit_chat/home/sohbet_page.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/viewmodels/all_user_viewmodel.dart';
+import 'package:flutter_chit_chat/viewmodels/chat_viewmodel.dart';
 import 'package:flutter_chit_chat/viewmodels/user_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -87,9 +88,9 @@ class _KullanicilarState extends State<Kullanicilar> {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) =>
-                        SohbetPage(
-                          suankiUser: userViewModel.userModel!,
-                          sohbetEdilenUser: userItem,
+                        ChangeNotifierProvider(
+                          create: (_) => ChatViewmodel(userViewModel.userModel!, userItem),
+                          child: SohbetPage(),
                         ),
                   ),
                 );
