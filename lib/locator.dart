@@ -1,4 +1,5 @@
 import 'package:flutter_chit_chat/repository/user_repository.dart';
+import 'package:flutter_chit_chat/services/bildirim_gonderme_servisi.dart';
 import 'package:flutter_chit_chat/services/fake_auth_service.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/services/firestore_db_service.dart';
@@ -11,4 +12,5 @@ void setupLocator(){
   locator.registerLazySingleton(() => FakeAuthService());
   locator.registerLazySingleton(() => UserRepository());
   locator.registerLazySingleton(() => FirestoreDBService());
+  locator.registerLazySingleton(() => BildirimGonderme());
 }

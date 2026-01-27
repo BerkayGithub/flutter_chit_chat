@@ -285,4 +285,16 @@ class FirestoreDBService implements DBBase {
           .toList(),
     );
   }
+
+  Future<String?> getToken(UserModel user) async{
+    DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await _firebaseFirestore.doc('tokens/${user.userID}').get();
+    return documentSnapshot.data() != null ?  documentSnapshot.data()!['token'] : null;
+  }
+
+  Future<void> saveToken(String userId, String token) async{
+    DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await _firebaseFirestore.doc('tokens/$userId').get();
+    if(!documentSnapshot.exists){
+      await _firebaseFirestore.doc('tokens/$userId').set({'token' : token});
+    }
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_chit_chat/models/mesaj.dart';
 import 'package:flutter_chit_chat/models/sohbet.dart';
 import 'package:flutter_chit_chat/models/user_model.dart';
 import 'package:flutter_chit_chat/services/auth_base.dart';
+import 'package:flutter_chit_chat/services/bildirim_gonderme_servisi.dart';
 import 'package:flutter_chit_chat/services/fake_auth_service.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/services/firestore_db_service.dart';
@@ -15,9 +16,11 @@ class UserRepository implements AuthBase{
   final FirebaseAuthService _firebaseAuthService = locator<FirebaseAuthService>();
   final FakeAuthService _fakeAuthService = locator<FakeAuthService>();
   final FirestoreDBService _firestoreService = locator<FirestoreDBService>();
+  final BildirimGonderme _bildirimGonderme = locator<BildirimGonderme>();
 
   AppMode appMode = AppMode.RELEASE;
   var tumKullanicilarListesi = <UserModel>[];
+  Map<String, String> kullaniciToken = <String, String>{};
 
   @override
   Future<UserModel> currentUser() async{
@@ -136,7 +139,18 @@ class UserRepository implements AuthBase{
 
   Future<void> mesajGonder(String text, UserModel suankiUser, UserModel sohbetEdilenUser) async{
     if(appMode == AppMode.RELEASE){
-      return await _firestoreService.sendMessage(text, suankiUser, sohbetEdilenUser);
+      await _firestoreService.sendMessage(text, suankiUser, sohbetEdilenUser);
+
+      String? token = "";
+      if(kullaniciToken.containsKey(sohbetEdilenUser.userID)){
+        token = kullaniciToken[sohbetEdilenUser.userID];
+      }else{
+        token = await _firestoreService.getToken(sohbetEdilenUser);
+        if(token != null) kullaniciToken[sohbetEdilenUser.userID] = token;
+      }
+      
+      if(token != null) await _bildirimGonderme.bildirimGonder(text, suankiUser, token);
+      if(token == null) print("SEND MESSAGE : bildirim gönderilmedi çünkü token bulunamadı");
     }
   }
 

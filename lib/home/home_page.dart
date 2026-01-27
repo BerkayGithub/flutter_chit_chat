@@ -9,7 +9,9 @@ import 'package:flutter_chit_chat/services/auth_base.dart';
 import 'package:flutter_chit_chat/services/firebase_auth_service.dart';
 import 'package:flutter_chit_chat/viewmodels/all_user_viewmodel.dart';
 import 'package:provider/provider.dart';
+import '../pending_navigation.dart';
 import 'bottom_navigation_tab_bar.dart';
+import 'navigation_service.dart';
 
 class HomePage extends StatefulWidget {
   final UserModel userModel;
@@ -38,6 +40,17 @@ class _HomePageState extends State<HomePage> {
     TabItem.profil: Profil(),
     TabItem.konusmalarim: Konusmalarim(),
   };
+
+  @override
+  void initState(){
+    super.initState();
+    final pending = PendingNavigation.instance.consume();
+    if (pending != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        NavigationService.instance.push('/chat', args: pending);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

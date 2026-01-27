@@ -68,6 +68,8 @@
             </array>
         </dict>
     </array>
+    <key>FirebaseMessagingAutoInitEnabled</key>
+    <true/>
 
 </dict>
 </plist>
